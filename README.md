@@ -87,41 +87,41 @@ The folder structure should look similar to the following:
 ```bash
 project_name
 └── config
-    └── __init__.py
-    └── asgi.py
-    └── settings.py
-    └── urls.py
-    └── wsgi.py
+|   └── __init__.py
+|   └── asgi.py
+|   └── settings.py
+|   └── urls.py
+|   └── wsgi.py
 └── core
-    └── migrations
-        └── ...
-    └── static
-        └── imgs
-            └── avatar.svg
-        └── css
-            └── input.css
-            └── output.css
-        └── js
-            └── theme-toggle.js
-    └── templates
-        └── core
-            └── components
-                └── nav
-                    └── mobile-nav.html
-                └── navbar.html
-            └── _base.html
-            └── index.html
-    └── __init__.py
-    └── admin.py
-    └── apps.py
-    └── models.py
-    └── tests.py
-    └── urls.py
-    └── views.py
+|   └── migrations
+|   |   └── ...
+|   └── static
+|   |   └── imgs
+|   |   |   └── avatar.svg
+|   |   └── css
+|   |   |   └── input.css
+|   |   |   └── output.css
+|   |   └── js
+|   |   |   └── theme-toggle.js
+|   └── templates
+|   |   └── core
+|   |   |   └── components
+|   |   |   |   └── nav
+|   |   |   |   |   └── mobile-nav.html
+|   |   |   |   └── navbar.html
+|   |   |   └── _base.html
+|   |   |   └── index.html
+|   └── __init__.py
+|   └── admin.py
+|   └── apps.py
+|   └── models.py
+|   └── tests.py
+|   └── urls.py
+|   └── views.py
 └── node_modules
-    └── ...
+|   └── ...
 └── venv
-    └── ...
+|   └── ...
 └── .env
 └── .gitignore
 └── db.sqlite3
