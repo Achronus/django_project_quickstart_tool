@@ -1,4 +1,4 @@
-# Django Project Template
+# Django Project Quickstart Tool
 Welcome to the quick setup tool for creating a `Django` project with the following stack:
 
 - [TailwindCSS](https://tailwindcss.com/) and [Flowbite](https://flowbite.com/)
