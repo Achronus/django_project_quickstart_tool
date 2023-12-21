@@ -69,10 +69,14 @@ That's it! Everything is setup with a blank template ready to start building a p
 
 Simply, enter the new project folder and run the `Django` server in a command line:
 ```bash
+cd [project_name]
+```
+
+```bash
 python manage.py runserver
 ```
 
-And watch `Tailwind CSS` in another:
+And watch `Tailwind CSS` in another (remember to be in the project folder!):
 ```
 npm run dev
 ```
