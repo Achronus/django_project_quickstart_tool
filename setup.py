@@ -3,6 +3,7 @@ import shutil
 import subprocess
 import sys
 from functools import wraps
+import urllib.request
 
 from setup_assets.constants import *
 
@@ -142,12 +143,6 @@ def make_static_dirs() -> None:
 
 def move_setup_assets_to_project() -> None:
     """Duplicates the items in the `setup_assets` folder into the respective locations in the project directory."""
-    SETUP_ROOT_DIR = os.path.dirname(os.getcwd())
-    SETUP_ASSETS_DIR = os.path.join(SETUP_ROOT_DIR, SETUP_ROOT_ASSETS_NAME)
-    SETUP_ASSETS_ROOT_DIR = os.path.join(SETUP_ASSETS_DIR, SETUP_ROOT_ASSETS_ROOT_FOLDER)
-    SETUP_ASSETS_STATIC_DIR = os.path.join(SETUP_ASSETS_DIR, SETUP_ROOT_ASSETS_STATIC_FOLDER)
-    SETUP_ASSETS_TEMPLATE_DIR = os.path.join(SETUP_ASSETS_DIR, SETUP_ROOT_ASSETS_TEMPLATE_FOLDER)
-
     try:
         # Move root folder assets into root project dir
         shutil.copytree(SETUP_ASSETS_ROOT_DIR, os.getcwd(), dirs_exist_ok=True)
@@ -159,7 +154,7 @@ def move_setup_assets_to_project() -> None:
         shutil.copytree(SETUP_ASSETS_TEMPLATE_DIR, ROOT_TEMPLATE_FOLDER_URL, dirs_exist_ok=True)
 
         # Update firstapp folder name
-        setup_firstapp_dir_name = os.path.join(ROOT_TEMPLATE_FOLDER_URL, 'firstapp')
+        setup_firstapp_dir_name = os.path.join(ROOT_TEMPLATE_FOLDER_URL, SETUP_FIRSTAPP_DIR)
         new_firstapp_dir_name = os.path.join(os.path.dirname(setup_firstapp_dir_name), FIRSTAPP_DIR)
 
         os.rename(setup_firstapp_dir_name, new_firstapp_dir_name)
@@ -167,9 +162,9 @@ def move_setup_assets_to_project() -> None:
         raise FileNotFoundError(f"{e}\nDoes a 'setup_assets' folder exist in: '{os.getcwd()}' and contain the required folder?")
 
 
-def add_tailwindcss() -> None:
+def configure_npm_assets() -> None:
     subprocess.run(["npm", "install", "-D", "tailwindcss"], shell=True)
-    subprocess.run(["npm", "install", "flowbite"], shell=True)
+    subprocess.run(["npm", "install", "flowbite", "alpinejs"], shell=True)
     
     subprocess.run(["npx", "tailwindcss", "-i", f"./{FIRSTAPP_DIR}/static/css/input.css", "-o", f"./{FIRSTAPP_DIR}/static/css/output.css"], shell=True)
 
@@ -188,6 +183,21 @@ def add_tailwindcss() -> None:
         return content
     
     update_content()
+
+
+def download_js_libraries_to_static() -> None:
+    # Copy Flowbite from node_modules
+    shutil.copy(FLOWBITE_URL, os.path.join(ROOT_STATIC_FOLDER_URL, 'js', FLOWBITE_FILENAME))
+
+    # Retrieve HTMX from official downloads page
+    with urllib.request.urlopen(HTMX_URL) as response:
+        htmx_content = response.read().decode('utf-8')
+    
+    with open(os.path.join(ROOT_STATIC_FOLDER_URL, 'js', HTMX_FILENAME), 'w') as file:
+        file.write(htmx_content)
+
+    # Retrieve AlpineJS from node_modules
+    shutil.copy(ALPINE_URL, os.path.join(ROOT_STATIC_FOLDER_URL, 'js', ALPINE_FILENAME))
 
 
 @readwrite_file(path=ROOT_SETTINGS_PATH)
@@ -407,9 +417,14 @@ def run_setup() -> None:
 
     # Step 15: Add Tailwind CSS and Flowbite
     print("Installing Tailwind CSS...")
-    add_tailwindcss()
+    configure_npm_assets()
 
-    # Step 16: Update config/urls.py and firstapp/urls.py
+    # Step 16: Add HTMX, AlpineJS, and Flowbite to static folder
+    print("Downloading HTMX, AlpineJS, and Flowbite...", end='')
+    download_js_libraries_to_static()
+    print("Complete.")
+
+    # Step 17: Update config/urls.py and firstapp/urls.py
     print(f"Updating '{ROOT_URLS_PATH}'...", end='')
     update_urlpatterns_root()
     add_static_to_urlpatterns_root()
@@ -420,7 +435,7 @@ def run_setup() -> None:
     update_urlpatterns_core()
     print("Complete.")
 
-    # Step 17: Run initial database migration
+    # Step 18: Run initial database migration
     print("Migrating database...")
     migrate_db()
     create_superuser()
