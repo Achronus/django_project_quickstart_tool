@@ -127,8 +127,7 @@ project_name
 |   └── templates
 |   |   └── core
 |   |   |   └── components
-|   |   |   |   └── nav
-|   |   |   |   |   └── mobile-nav.html
+|   |   |   |   └── mobile-nav.html
 |   |   |   |   └── navbar.html
 |   |   |   └── _base.html
 |   |   |   └── index.html
