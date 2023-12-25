@@ -171,13 +171,13 @@ def add_tailwindcss() -> None:
     subprocess.run(["npm", "install", "-D", "tailwindcss"], shell=True)
     subprocess.run(["npm", "install", "flowbite"], shell=True)
     
-    subprocess.run(["npx", "tailwindcss", "-i", "./core/static/css/input.css", "-o", "./core/static/css/output.css"], shell=True)
+    subprocess.run(["npx", "tailwindcss", "-i", f"./{FIRSTAPP_DIR}/static/css/input.css", "-o", f"./{FIRSTAPP_DIR}/static/css/output.css"], shell=True)
 
     # Update package.json for watching tailwindcss with 'dev' command
     @readwrite_file(path=os.path.join(os.getcwd(), "package.json"))
     def update_content(content: str) -> str:
         old_content = '"devDependencies": {'
-        tw_css_cmd = "npx tailwindcss -i ./core/static/css/input.css -o ./core/static/css/output.css --watch"
+        tw_css_cmd = f"npx tailwindcss -i ./{FIRSTAPP_DIR}/static/css/input.css -o ./{FIRSTAPP_DIR}/static/css/output.css --watch"
         new_content = '"scripts": {\n\t\t"dev": ' + f'"{tw_css_cmd}"' + '\n\t},\n\t' + old_content
 
         content = content.replace(
@@ -325,7 +325,7 @@ def update_urlpatterns_root(content: str) -> str:
 
     content = content.replace(
         "path('admin/', admin.site.urls),",
-        "path('admin/', admin.site.urls),\n\tpath('__reload__/', include('django_browser_reload.urls')),\n\tpath('', include('core.urls')),",
+        f"path('admin/', admin.site.urls),\n\tpath('__reload__/', include('django_browser_reload.urls')),\n\tpath('', include('{FIRSTAPP_DIR}.urls')),",
         1
     )
     return content
@@ -350,7 +350,7 @@ def update_urlpatterns_core() -> None:
 def create_index_view_core() -> None:
     with open(FIRSTAPP_VIEWS_PATH, "a") as file:
         file.write("def index(request):\n")
-        file.write("\treturn render(request, 'core/index.html')")
+        file.write(f"\treturn render(request, '{FIRSTAPP_DIR}/index.html')")
 
 
 def migrate_db() -> None:
