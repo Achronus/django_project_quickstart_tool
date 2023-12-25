@@ -35,11 +35,9 @@ def __get_config_list_content(start_marker: str, end_marker: str, path: os.path)
     return content_str
 
 
-def __list_content_update(old_content: str, additions: list[str]) -> None:
-    """Helper function for `update_installed_apps()` and `update_middleware()`. Updates a list of content given the `old_content` and a list of `additions`."""
-    new_content = old_content
-    for item in additions:
-        new_content += ''.join(f"    {item}\n")
+def __settings_content_update(old_content: str, additions: str) -> None:
+    """Helper function for `update_installed_apps()` and `update_middleware()`. Updates a string of content given the `old_content` and a string of `additions`."""
+    new_content = old_content + additions
     
     @readwrite_file(path=ROOT_SETTINGS_PATH)
     def update_content(content: str) -> str:
@@ -65,6 +63,13 @@ def __handle_project_name(project_name: str) -> str:
         project_name = '_'.join(name_split)
     
     return project_name.strip()
+
+
+def __settings_formatter_loop(settings_items: list[str], additions: str) -> str:
+    """Helper function to create an `additions` string for adding items to the `settings.py` file. Loops through the `settings_items` and adapts them to a specific format before adding them to `additions`."""
+    for item in settings_items:
+        additions += ''.join(f"    '{item}',\n")
+    return additions
 
 
 # Decorators
@@ -211,7 +216,7 @@ def init_updates_to_settings_file(content: str) -> str:
     # Add root templates directory to TEMPLATES/DIRS
     new_template_dirs = '[\n'
     for item in TEMPLATES_DIRS_ADDITIONS:
-        new_template_dirs += ''.join(f'\t\t\t{item}\n')
+        new_template_dirs += ''.join(f'\t\t\t{item},\n')
     new_template_dirs += '\t\t],'
 
     content = content.replace(
@@ -249,14 +254,23 @@ def generate_env_file() -> None:
 
 def update_installed_apps() -> None:
     installed_apps_str = __get_config_list_content("INSTALLED_APPS", "]", ROOT_SETTINGS_PATH)
-    additions = ['\n\n    # 3rd party',  *INSTALLED_APPS_3RDPARTY, '\n    # local apps', *INSTALLED_APPS_LOCAL]
-    __list_content_update(installed_apps_str, additions)
+
+    additions = '\n\n    # 3rd party\n'
+    additions = __settings_formatter_loop(INSTALLED_APPS_3RDPARTY, additions)
+
+    additions += '\n    # local apps\n' 
+    additions = __settings_formatter_loop(INSTALLED_APPS_LOCAL, additions)
+
+    __settings_content_update(installed_apps_str, additions)
 
 
 def update_middleware() -> None:
     middleware_str = __get_config_list_content("MIDDLEWARE", "]", ROOT_SETTINGS_PATH)
-    additions = ['\n\n    # 3rd party',  *MIDDLEWARE_3RDPARTY_BOTTOM]
-    __list_content_update(middleware_str, additions)
+
+    additions = '\n\n    # 3rd party\n'
+    additions = __settings_formatter_loop(MIDDLEWARE_3RDPARTY_BOTTOM, additions)
+
+    __settings_content_update(middleware_str, additions)
 
 
 @readwrite_lines(path=ROOT_SETTINGS_PATH)
@@ -265,23 +279,31 @@ def add_staticfiles_config(content: str, i: int, line: str) -> str:
         static_url_line = f"STATIC_URL = '{STATIC_URL}'\n"
         static_root_line = f"STATIC_ROOT = os.path.join(BASE_DIR.parent, '{STATIC_ROOT_DIR}')\n\n"
 
-        staticfiles_dir_str = "STATICFILES_DIRS = [\n"
+        staticfiles_dir_str = "STATICFILES_DIRS = [\n]\n\n"
         staticfiles_finders_str = "STATICFILES_FINDERS = [\n    # Default finders\n"
 
-        for item in NEW_STATICFILES_DIRS:
-            staticfiles_dir_str += ''.join(f'    {item}\n')
-        staticfiles_dir_str += ']\n\n'
-
-        for item in STATICFILES_DEFAULT_FINDERS:
-            staticfiles_finders_str += ''.join(f'    {item}\n')
+        staticfiles_finders_str = __settings_formatter_loop(STATICFILES_DEFAULT_FINDERS, staticfiles_finders_str)
         staticfiles_finders_str += '\n    # 3rd party\n'
 
-        for item in NEW_STATICFILES_3RDPARTY_FINDERS:
-            staticfiles_finders_str += ''.join(f'    {item}\n')
+        staticfiles_finders_str = __settings_formatter_loop(NEW_STATICFILES_3RDPARTY_FINDERS, staticfiles_finders_str)
         staticfiles_finders_str += ']\n\n'
 
         new_staticfile_settings = static_url_line + static_root_line + staticfiles_dir_str + staticfiles_finders_str
         content[i] = new_staticfile_settings
+    return content
+
+
+@readwrite_file(path=ROOT_SETTINGS_PATH)
+def update_staticfiles_dirs(content: str) -> str:
+    staticfiles_dir_str = 'STATICFILES_DIRS = ['
+    for item in NEW_STATICFILES_DIRS:
+        staticfiles_dir_str += ''.join(f'\n   {item},')
+
+    content = content.replace(
+        "STATICFILES_DIRS = [",
+        staticfiles_dir_str,
+        1
+    )
     return content
 
 
@@ -359,11 +381,7 @@ def run_setup() -> None:
     move_setup_assets_to_project()
     print('Complete.')
 
-    # Step 7: Add Tailwind CSS and Flowbite
-    print("Installing Tailwind CSS...")
-    add_tailwindcss()
-
-    # Step 8: Add initial updates to config/settings.py
+    # Step 7: Add initial updates to config/settings.py
     print(f"Updating '{ROOT_SETTINGS_PATH}'...", end='')
     init_updates_to_settings_file()
 
@@ -381,12 +399,17 @@ def run_setup() -> None:
 
     # Step 13: Add static files configuration to config/settings.py
     add_staticfiles_config()
+    update_staticfiles_dirs()
 
     # Step 14: Add compressor configuration to config/settings.py
     add_compressor_config()
-
-    # Step 15: Update config/urls.py and firstapp/urls.py
     print("Complete.")
+
+    # Step 15: Add Tailwind CSS and Flowbite
+    print("Installing Tailwind CSS...")
+    add_tailwindcss()
+
+    # Step 16: Update config/urls.py and firstapp/urls.py
     print(f"Updating '{ROOT_URLS_PATH}'...", end='')
     update_urlpatterns_root()
     add_static_to_urlpatterns_root()
@@ -397,7 +420,7 @@ def run_setup() -> None:
     update_urlpatterns_core()
     print("Complete.")
 
-    # Step 16: Run initial database migration
+    # Step 17: Run initial database migration
     print("Migrating database...")
     migrate_db()
     create_superuser()
