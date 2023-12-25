@@ -52,6 +52,21 @@ def __list_content_update(old_content: str, additions: list[str]) -> None:
     update_content()
 
 
+def __handle_project_name(project_name: str) -> str:
+    """Helper function for replacing whitespace and dashes in the project name."""
+    name_split = []
+
+    if '-' in project_name:
+        name_split = project_name.split('-')
+    elif ' ' in project_name:
+        name_split = project_name.split(' ')
+
+    if len(name_split) != 0:
+        project_name = '_'.join(name_split)
+    
+    return project_name.strip()
+
+
 # Decorators
 def readwrite_lines(path: str):
     """Decorator for using 'file.readlines()' and updating content to it."""
@@ -220,6 +235,11 @@ def generate_env_file() -> None:
         file.write("DEBUG_MODE=True\n")
         file.write(f"DJANGO_SUPERUSER_PASSWORD={SUPERUSER_PASSWORD}")
 
+    # Add additional custom config settings
+    with open(".env", "a") as file:
+        for item in ENV_FILE_ADDITIONAL_PARAMS:
+            file.write(item)
+
 
 def update_installed_apps() -> None:
     installed_apps_str = __get_config_list_content("INSTALLED_APPS", "]", ROOT_SETTINGS_PATH)
@@ -382,6 +402,8 @@ def run_setup() -> None:
 
 if __name__ == "__main__":
     project_name = input("Enter the name of the root directory: ")
+    project_name = __handle_project_name()
+    print(f"Project name set to: '{project_name}'")
 
     # Handle existing project name
     if os.path.exists(project_name):

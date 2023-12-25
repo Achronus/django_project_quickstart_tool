@@ -52,3 +52,8 @@ STATICFILES_DEFAULT_FINDERS = [
 NEW_STATICFILES_3RDPARTY_FINDERS = [
     "'compressor.finders.CompressorFinder',"
 ]
+
+# .ENV file additional parameters
+ENV_FILE_ADDITIONAL_PARAMS = [
+    # f'DATABASE_NAME={DB_NAME}'  # example
+]
