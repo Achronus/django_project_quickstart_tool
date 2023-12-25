@@ -37,7 +37,7 @@ The tool does the following (not necessarily in this order!):
   - Updating the `TEMPLATES DIRS`
   - Updating the `STATICFILES` section
   - Adding the `django-compressor` settings
-- Creates a `firstapp` called `core`
+- Creates a `firstapp`
 - Updates `config/urls.py` to include `django-browser-reload` and `firstapp`
 - Creates a `_base.html` and an `index.html` file in `firstapp/templates/firstapp`
 - Creates a `Flowbite` navbar in `firstapp/templates/firstapp/components`
@@ -63,7 +63,7 @@ Secondly, you can add custom files to the `setup_assets` folder. These are divid
 - `static` - for static items such as `css`, `js`, and `img` files
 - `templates` - for template files in your project
 
-_Note: template files follow the standard convention required by `Django` to work correctly. For example, the ones in `firstapp` follow the convention: `templates/firstapp/...`._
+_Note: template files follow the standard convention required by `Django` to work correctly. For example, the ones in `firstapp` follow the convention: `templates/firstapp/...` where `firstapp` is automatically updated to the `FIRSTAPP_DIR` name._
 
 ## Dependencies
 

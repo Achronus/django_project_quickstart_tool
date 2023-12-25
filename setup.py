@@ -152,6 +152,12 @@ def move_setup_assets_to_project() -> None:
 
         # Move templates into firstapp templates dir
         shutil.copytree(SETUP_ASSETS_TEMPLATE_DIR, ROOT_TEMPLATE_FOLDER_URL, dirs_exist_ok=True)
+
+        # Update firstapp folder name
+        setup_firstapp_dir_name = os.path.join(ROOT_TEMPLATE_FOLDER_URL, 'firstapp')
+        new_firstapp_dir_name = os.path.join(os.path.dirname(setup_firstapp_dir_name), FIRSTAPP_DIR)
+
+        os.rename(setup_firstapp_dir_name, new_firstapp_dir_name)
     except FileNotFoundError as e:
         raise FileNotFoundError(f"{e}\nDoes a 'setup_assets' folder exist in: '{os.getcwd()}' and contain the required folder?")
 
@@ -401,8 +407,9 @@ def run_setup() -> None:
 
 
 if __name__ == "__main__":
+    print("Note: we automatically replace 'whitespaces' and '-' with '_'.")
     project_name = input("Enter the name of the root directory: ")
-    project_name = __handle_project_name()
+    project_name = __handle_project_name(project_name)
     print(f"Project name set to: '{project_name}'")
 
     # Handle existing project name

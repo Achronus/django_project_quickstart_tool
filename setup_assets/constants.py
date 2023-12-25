@@ -29,4 +29,3 @@ FIRSTAPP_VIEWS_PATH = os.path.join(FIRSTAPP_DIR, "views.py")
 
 ROOT_STATIC_FOLDER_URL = os.path.join(FIRSTAPP_DIR, 'static')
 ROOT_TEMPLATE_FOLDER_URL = os.path.join(FIRSTAPP_DIR, 'templates')
-
