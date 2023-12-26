@@ -35,7 +35,7 @@ INSTALLED_APPS_LOCAL = [
 ]
 
 # MIDDLEWARE setting additions
-MIDDLEWARE_3RDPARTY_BOTTOM = [
+MIDDLEWARE_3RDPARTY = [
     "django_browser_reload.middleware.BrowserReloadMiddleware",
     "django_htmx.middleware.HtmxMiddleware"
 ]
