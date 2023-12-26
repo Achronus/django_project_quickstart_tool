@@ -275,10 +275,11 @@ def update_installed_apps() -> None:
 
 
 def update_middleware() -> None:
-    middleware_str = __get_config_list_content("MIDDLEWARE", "]", ROOT_SETTINGS_PATH)
+    middleware_str = "'django.contrib.sessions.middleware.SessionMiddleware',"
 
     additions = '\n\n    # 3rd party\n'
-    additions = __settings_formatter_loop(MIDDLEWARE_3RDPARTY_BOTTOM, additions)
+    additions = __settings_formatter_loop(MIDDLEWARE_3RDPARTY, additions)
+    additions += "\n    # Core\n"
 
     __settings_content_update(middleware_str, additions)
 
