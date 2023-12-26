@@ -8,6 +8,10 @@
     </a>
     <div class="flex items-center gap-3 md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
         <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Get started</button>
+        <div id="theme-toggle" class="w-8 h-8">
+            <img id="moon" class="cursor-pointer dark:text-white text-white" src="{% static 'imgs/moon.svg' %}" alt="">
+            <img id="sun" class="cursor-pointer text-white" src="{% static 'imgs/sun.svg' %}" alt="">
+        </div>
         <button type="button" class="flex text-sm bg-gray-800 rounded-full md:me-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
             <span class="sr-only">Open user menu</span>
             <img class="w-8 h-8 rounded-full" src="{% static 'imgs/avatar.svg' %}" alt="user photo">
