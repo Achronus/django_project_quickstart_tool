@@ -123,6 +123,9 @@ project_name
 |   |   |   └── input.css
 |   |   |   └── output.css
 |   |   └── js
+|   |   |   └── alpine.min.js
+|   |   |   └── flowbite.min.js
+|   |   |   └── htmx.min.js
 |   |   |   └── theme-toggle.js
 |   └── templates
 |   |   └── core
