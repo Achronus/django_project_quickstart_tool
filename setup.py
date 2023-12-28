@@ -1,3 +1,4 @@
+import argparse
 import os
 import shutil
 import subprocess
@@ -110,10 +111,50 @@ def readwrite_file(path: str):
 
 
 # Setup functions
-def create_root_directory(directory_name: str) -> None:
+def create_root_directory(name: str, outside_flag: bool, force_flag: bool) -> None:
     """Creates the root project directory."""
-    os.makedirs(directory_name)
-    os.chdir(directory_name)
+    name = __handle_project_name(name)
+    print(f"Project name set to: '{name}'.\n")
+
+    if outside_flag:
+        path = os.path.join(os.path.dirname(os.getcwd()), name)
+    else:
+        path = os.path.join(os.getcwd(), name)
+    
+    qs_dir = os.path.basename(os.getcwd())
+    parent_sq_dir = f"'{os.path.basename(os.path.dirname(path))}'"
+    outside_folder_text = f"outside '{qs_dir}' -> into {parent_sq_dir}"
+    inside_folder_text = f"inside '{qs_dir}'"
+    creation_str = f"{outside_folder_text if outside_flag else inside_folder_text}..."
+    print(f"Attempting project creation {creation_str}", end=' ')
+
+    if os.path.exists(path):
+        print('Failed.\n')
+        print(f"Project with name '{name}' already exists!")
+        if force_flag:
+            print("Attempting force deletion...", end=' ')
+            try:
+                if os.path.isdir(path):
+                    shutil.rmtree(path)
+                    print('Success!')
+                    print(f"Project successfully removed. Creating new one {creation_str} Success!")
+                else:
+                    print('Failed!')
+                    print(f"The path '{path}' is not a directory.")
+                    sys.exit()
+            except Exception as e:
+                print('Failed!')
+                print(f'Error: {path} -> {e}')
+                sys.exit()
+        else:
+            print(f"A project already exists with that name ('{name}')! Use the '--force' flag to delete it and create a new one.")
+            sys.exit()
+    else:
+        print('Success!')
+
+    os.makedirs(path)
+    print(f"Project '{name}' created at '{path}'.\n")
+    os.chdir(path)
 
 
 def create_virtual_environment() -> None:
@@ -446,33 +487,15 @@ def run_setup() -> None:
 
 
 if __name__ == "__main__":
-    print("Note: we automatically replace 'whitespaces' and '-' with '_'.")
-    project_name = input("Enter the name of the root directory: ")
-    project_name = __handle_project_name(project_name)
-    print(f"Project name set to: '{project_name}'")
+    parser = argparse.ArgumentParser(description="A simple way to create a new Django, TailwindCSS, HTMX, and AlpineJS project, fast.")
+    parser.add_argument("name", help="Name of the project directory. Note: automatically converts 'whitespace' and '-' to '_'.", type=str)
+    parser.add_argument("--outside", action="store_true", help="Create the directory outside the setup folder.")
+    parser.add_argument("--force", action="store_true", help="Forcefully remove an existing directory with the same name.")
 
-    # Handle existing project name
-    if os.path.exists(project_name):
-        confirmation = input(f"A project already exists with that name ('{project_name}')! Do you really want to delete it? (yes/no) ").lower()
-    
-        if confirmation == 'yes':
-            try:
-                if os.path.isdir(project_name):
-                    shutil.rmtree(project_name)
-                    print("Project successfully removed. Creating new one...")
-                else:
-                    print(f"The path '{project_name}' is not a directory.")
-                    sys.exit()
-            except Exception as e:
-                print(f'Error: {os.path.join(os.getcwd(), project_name)} -> {e}')
-                sys.exit()
-        else:
-            print('Deletion cancelled.')
-            sys.exit()
+    args = parser.parse_args()
 
+    # Step 1: Create a root project directory
+    create_root_directory(args.name, args.outside, args.force)
 
-    # Step 1: Create a root directory
-    create_root_directory(project_name)
-    
     # Run setup
     run_setup()

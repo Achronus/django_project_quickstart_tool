@@ -63,13 +63,15 @@ Secondly, you can add custom files to the `setup_assets` folder. These are divid
 - `static` - for static items such as `css`, `js`, and `img` files
 - `templates` - for template files in your project
 
-_Note: template files follow the standard convention required by `Django` to work correctly. For example, the ones in `firstapp` follow the convention: `templates/firstapp/...` where `firstapp` is automatically updated to the `FIRSTAPP_DIR` name._
+_Note: template files follow the standard convention required by `Django` to work correctly. For example, the ones in `firstapp` follow the convention: `templates/firstapp/...` where `firstapp` is automatically updated to the `FIRSTAPP_DIR` name in `config.py`._
 
 ## Dependencies
 
 _Note: The install requires [NodeJS](https://nodejs.org/en), NPM, and [Python](https://www.python.org/downloads/) to be installed on your local machine._
 
-1. To get started, clone the repository, enter the folder, run `setup.py`, and input a project name when prompted:
+
+### Creation
+1. To get started, clone the repository, enter the folder and run `setup.py` with a `name` argument to create a new project inside the `django_project_quickstart_tool` directory:
 
 ```bash
 git clone https://github.com/Achronus/django_project_quickstart_tool.git
@@ -80,22 +82,43 @@ cd django_project_quickstart_tool
 ```
 
 ```bash
-python setup.py
+python setup.py my_project
 ```
 
-That's it! Everything is setup with a blank template ready to start building a project from scratch.
-
-Simply, enter the new project folder and run the `Django` server in a command line:
+OR create a project directory outside of the `django_project_quickstart_tool` inside its parent directory using the `--outside` flag:
 
 ```bash
-cd [project_name]
+python setup.py my_project --outside
 ```
 
+### Replacing A Project With the Same Name
+Looking to replace an existing project with the same name? Use the `--force` flag to delete the old project and create a new one!
+
+```bash
+python setup.py my_project --outside --force
+```
+
+### And That's It!
+Everything is setup with a blank template ready to start building a project from scratch.
+
+Simply, enter the new project folder:
+
+```bash
+# If using the --outside flag
+cd ../my_project
+```
+
+```bash
+# Otherwise
+cd my_project
+```
+
+Run the `Django` server in one terminal:
 ```bash
 python manage.py runserver
 ```
 
-And watch `Tailwind CSS` in another (remember to be in the project folder!):
+And watch `TailwindCSS` in another (remember to be in the project folder!):
 
 ```bash
 npm run dev
@@ -103,7 +126,7 @@ npm run dev
 
 ## Folder Structure
 
-The newly created project folder structure should look similar to the following:
+The newly created project should look similar to the following:
 
 ```bash
 project_name
