@@ -126,7 +126,7 @@ npm run dev
 
 ## Folder Structure
 
-The newly created project folder structure should look similar to the following:
+The newly created project should look similar to the following:
 
 ```bash
 project_name
